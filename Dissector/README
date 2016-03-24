@@ -1,0 +1,79 @@
+
+Dissector details
+===================
+
+step -1:
+
+Compile c code:
+  gcc -g server.c -o server
+  gcc -g client.c -o client
+
+step -2:
+After staring wireshark, start client programme. Capture all wireshark logs & save the pcap file
+
+step -3: 
+  server: will create UDP server port on 3333
+  client: will send data to server (5 packets)
+
+details:
+===============
+protocol frame:
+
+1byte: 0 (request) /1 (response)
+1byte: 1 (ping)
+1byte: payload length
+payload length: payload
+
+
+client will send 5 packets:
+  01 ==> request + ping 
+server will respond:
+  114PONG ==> response + ping + payload len (4) + PONG
+
+
+
+step-4:
+  @ copy udp_dissector.lua in wireshark plugin folder
+  @ open the saved pcap file see that all packets will parsed & readable format
+
+Dissector details:
+=================
+
+1. register protocol udp in our case
+  udp_table = DissectorTable.get("udp.port")
+
+2. register protocol port
+  udp_table:add(3333,trivial_proto)
+
+3. get the instance of protocol table
+   trivial_proto = Proto("trivial","Trivial Protocol")
+
+4. Create dissector function
+   trivial_proto.dissector(buffer,pinfo,tree)
+       buffer ==> data received in udp packet either (01/114PONG)
+   ===protocol name======    
+   pinfo.cols.protocol = "protocol name"
+       choose appropriate name, this will be displayed under protocol in wireshark window
+   ===read payload======
+   local packet_type = buffer(0,1):uint()
+       read one(1) byte from 0th position; convert to uint
+   local pay_load_len = buffer(2,1):uint() -- payload len if any
+       read one(1) byte from 2th position; convert to uint
+   local payload = buffer(3, pay_load_len):string() -- payload
+       read pay_load_len(4) byte from 3th position; convert to string
+
+   ===setup tree structure===
+   local subtree = tree:add(trivial_proto,buffer(),"Trivial Protocol Data")
+     subtree ==> is the place to show parsed data with heading "trivial protocol data"
+   ==add details of individal feild
+   subtree:add(buffer(0,1),buffer(0,1):uint() .. ": " .. tpak_type[packet_type])
+   subtree:add(buffer(1,1),buffer(1,1):uint() .. ": ".. treq_type[req_type])
+
+
+
+
+
+
+
+
+
