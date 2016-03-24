@@ -69,7 +69,10 @@ Dissector details:
    subtree:add(buffer(0,1),buffer(0,1):uint() .. ": " .. tpak_type[packet_type])
    subtree:add(buffer(1,1),buffer(1,1):uint() .. ": ".. treq_type[req_type])
 
-
+using 'tshark' to parse pcap file
+==================================
+  tshark  -X lua_script:<dissector_file.lua> -r <captured.pcap> -w out <this will through all print functions on stdout>
+  ex: tshark  -X lua_script:udp_dissector.lua -r udp_333.pcap -w out 
 
 
 
