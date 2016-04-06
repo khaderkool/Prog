@@ -2,10 +2,12 @@ print "Hello world"
 
 -- trivial protocol example
 -- declare our protocol
-trivial_proto = Proto("trivial","Trivial Protocol")
+trivial_proto = Proto("tri","tri_proto")
+
 -- create a function to dissect it
 function trivial_proto.dissector(buffer,pinfo,tree)
-    pinfo.cols.protocol = "TRIVIAL-3" --sets Protocol on wireshark
+
+    pinfo.cols.protocol = "tri" --sets Protocol on wireshark
 	if buffer:len() < 2 then
 	  return -- must have atleast 2 bytes of data to parse
 	end
@@ -24,11 +26,11 @@ function trivial_proto.dissector(buffer,pinfo,tree)
 	local tpak_type = { [0] = "req", [1] = "resp" } 
 	local treq_type = { [1] = "ping", [2] = "time" }
 		
-	local subtree = tree:add(trivial_proto,buffer(),"Trivial Protocol Data") --sets Data name
+	local subtree = tree:add(trivial_proto,buffer()) 
 	
 	--tell packet type & request type --> this will go on info session in wireshar UI
 	-- this will add 'req ping' or 'resp ping' pinfo.cols.info = string.format('%s %s', tpak_type[packet_type], treq_type[req_type])
-	pinfo.cols.info = string.format('%s', tpak_type[packet_type])
+	
 	
 	--construct data parser
 	subtree:add(buffer(0,1),buffer(0,1):uint() .. ": " .. tpak_type[packet_type])
@@ -37,13 +39,24 @@ function trivial_proto.dissector(buffer,pinfo,tree)
 	if buffer:len() > 2 then
 	  --subtree:add(buffer(2,1),"Payload len:  ".. buffer(2,1):uint())
 	  --subtree:add(buffer(2,1),"Payload:  ".. buffer(3,pay_load_len):string())
-	  subtree:add(buffer(2,1),"Payload len:  ".. pay_load_len)
-	  subtree:add(buffer(2,1),"Payload:  ".. payload)
+	  pinfo.cols.info = string.format('%s', tpak_type[packet_type], "pong")
+	  subtree:add(buffer(2,1),"Payload len:  ".. buffer(2,1):uint())
+	  subtree:add(trivial_proto.fields.bytes, buffer(3,pay_load_len), buffer(3,pay_load_len):string())
+	  
+	else
+	  pinfo.cols.info = string.format('%s', tpak_type[packet_type])
 	end
 	
 	
 end
+
 -- load the udp.port table
 udp_table = DissectorTable.get("udp.port")
--- register our protocol to handle udp port 7777
 udp_table:add(3333,trivial_proto)
+
+trivial_proto.fields.u16 = ProtoField.int16("tri.length", "Length", base.DEC)
+trivial_proto.fields.bytes = ProtoField.string("tri.text", "Text") 
+
+
+
+
