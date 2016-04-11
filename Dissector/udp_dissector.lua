@@ -33,18 +33,14 @@ function trivial_proto.dissector(buffer,pinfo,tree)
 	
 	
 	--construct data parser
-	subtree:add(buffer(0,1),buffer(0,1):uint() .. ": " .. tpak_type[packet_type])
-	subtree:add(buffer(1,1),buffer(1,1):uint() .. ": ".. treq_type[req_type])
+	
+	pinfo.cols.info = string.format('%s', tpak_type[packet_type])
+	--subtree:add(trivial_proto.fields.bytes, buffer(0,1),buffer(0,1):uint() .. ": " .. tpak_type[packet_type])
+	subtree:add(f_bytes, buffer(0,1), tpak_type[packet_type])
+	subtree:add(buffer(1,1),treq_type[req_type])
 	
 	if buffer:len() > 2 then
-	  --subtree:add(buffer(2,1),"Payload len:  ".. buffer(2,1):uint())
-	  --subtree:add(buffer(2,1),"Payload:  ".. buffer(3,pay_load_len):string())
-	  pinfo.cols.info = string.format('%s', tpak_type[packet_type], "pong")
-	  subtree:add(buffer(2,1),"Payload len:  ".. buffer(2,1):uint())
-	  subtree:add(trivial_proto.fields.bytes, buffer(3,pay_load_len), buffer(3,pay_load_len):string())
-	  
-	else
-	  pinfo.cols.info = string.format('%s', tpak_type[packet_type])
+	  subtree:add(trivial_proto.fields.string, buffer(3,pay_load_len), buffer(3,pay_load_len):string())
 	end
 	
 	
@@ -54,9 +50,12 @@ end
 udp_table = DissectorTable.get("udp.port")
 udp_table:add(3333,trivial_proto)
 
-trivial_proto.fields.u16 = ProtoField.int16("tri.length", "Length", base.DEC)
-trivial_proto.fields.bytes = ProtoField.string("tri.text", "Text") 
+f_bytes = ProtoField.string("tri.data", "bytes")
 
+trivial_proto.fields.u16 = ProtoField.int16("tri.length", "Length", base.DEC)
+f_bytes = ProtoField.string("tri.data", "data") 
+trivial_proto.fields.string = ProtoField.string("tri.payload", "Data") 
+trivial_proto.fields = {f_bytes}
 
 
 
