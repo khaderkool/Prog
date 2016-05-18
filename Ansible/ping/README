@@ -5,6 +5,12 @@ usage:
   3. Copy ssh keys of remote machines/droplets by running this  commad
     ex: ssh-copy-id prod@169.14.7.126
         ssh-copy-id prod@169.14.7.127
+    if dont want to save ssh keys try enabling in ansible.cfg
+      #sudo_user      = root
+      #ask_sudo_pass = True
+      #ask_pass      = True
+
+      
   4. folder and run this command:  'ansible-playbook -i hosts test.yml'
   5. you should success after ping resposes
 
