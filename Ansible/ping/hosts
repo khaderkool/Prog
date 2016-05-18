@@ -1,0 +1,2 @@
+host9 ansible_ssh_host=169.14.7.126
+host8 ansible_ssh_host=169.14.7.127
