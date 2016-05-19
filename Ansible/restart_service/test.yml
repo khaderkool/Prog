@@ -1,0 +1,11 @@
+---
+
+- hosts: tzc_first
+  remote_user: root
+  tasks:
+    - name: stop ntpd
+      service: name=ntpd state=stopped
+    - name: start ntpd
+      service: name=ntpd state=started
+    - name: restart rsyslog
+      service: name=rsyslog state=restarted

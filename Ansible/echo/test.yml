@@ -3,6 +3,6 @@
 - hosts: tzc_first
   tasks:
     - name: test connection
-      ping:
+      shell: echo "HELLO WORLD .."
       remote_user: prod
   

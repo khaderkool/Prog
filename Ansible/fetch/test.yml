@@ -3,6 +3,6 @@
 - hosts: tzc_first
   tasks:
     - name: test connection
-      ping:
+      fetch: src=/home/prod/temp.csv dest=/tmp/junk/ flat=yes
       remote_user: prod
   

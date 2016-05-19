@@ -1,0 +1,9 @@
+---
+
+- hosts: tzc_first
+  remote_user: root
+  tasks:
+    - name: remove lsyncd package
+      yum: name=lsyncd state=absent
+    - name: install lsyncd package
+      yum: name=lsyncd state=present

@@ -1,8 +1,8 @@
 ---
 
-- hosts: tzc_first
+- hosts: all
   tasks:
     - name: test connection
-      ping:
+      copy: src=/tmp/d.pid dest=/tmp/
       remote_user: prod
   
