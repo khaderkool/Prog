@@ -1,0 +1,25 @@
+Pre-req: Assuming we have ELF/exe file for borring.c. Assuming name to "borring" (gcc o borring borring.c; gcc borring.c -o borring)
+
+YUM install:
+yum install rpm-build
+
+as a normal user:
+1. create rpmbuild director at "/home/build/" by using command "rpmdev-setuptree" 
+     ls -Ral /home/build/rpmbuild
+2. create director borring-1.0
+     mkdir /tmp/borring-1.0
+3. create a c program & make file out of it
+4. Check if makefile works. After testing delete exe "borring" (not mandatory)
+5. Create a spec file in /tmp/borring-1.0/borring.spec
+6. Generate a gun zip file out of  /tmp/borring-1.0
+     tar -czvf borring1.0.tar.gz /tmp/borring-1.0
+8. copy "borring1.0.tar.gz" to rpmbuild/SOURCES
+     cp borring1.0.tar.gz /home/prod/rpmbuild/SOURCES
+9. Run spec file now. 
+     rpmbuild -ba 	/tmp/borring-1.0/borring.spec
+10. if everything goes smooth you should see a rpm under "/home/build/rpmbuild/RPMS/i686"	 
+11. by root user install rpm 
+      rpm -i borring-1.0-1.el6.i686.rpm
+12. Validate by installtion running "borring" command
+13. After all done, clean up time. Remove borring from machine
+      rpm -e borring
